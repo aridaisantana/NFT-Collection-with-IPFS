@@ -35,7 +35,9 @@ contract Zyzz is ERC721Enumerable, Ownable {
      * name in our case is `LW3Punks` and symbol is `LW3P`.
      * Constructor for LW3P takes in the baseURI to set _baseTokenURI for the collection.
      */
-    constructor(string memory baseURI) ERC721("Zyzz Legacy", "Zyzz") {
+    constructor(string memory baseURI)
+        ERC721("Zyzz God of Aesthetics", "Zyzz")
+    {
         _baseTokenURI = baseURI;
     }
 
