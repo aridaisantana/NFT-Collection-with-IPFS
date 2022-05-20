@@ -1,4 +1,4 @@
-import { Contract, providers, utils } from "ethers";
+import { Contract, providers, utils, BigNumber } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
@@ -9,6 +9,7 @@ export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
+  const [ownedIds, setOwnedIds] = useState([]);
   const web3ModalRef = useRef();
 
   /**
@@ -50,6 +51,27 @@ export default function Home() {
       const _tokenIds = await nftContract.tokenIds();
       console.log("tokenIds", _tokenIds);
       setTokenIdsMinted(_tokenIds.toString());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getOwnedNfts = async () => {
+    try {
+      const provider = await getProviderOrSigner(true);
+
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
+      const _tokenIds = BigNumber.from(await nftContract.tokenIds());
+      const ownedIdsMetadata = [];
+      for (let i = 1; i <= _tokenIds.toNumber(); i++) {
+        if ((await provider.getAddress()) === (await nftContract.ownerOf(i))) {
+          const tokenUri = await nftContract.tokenURI(i);
+          const tokenUriMetadata = await fetch(tokenUri);
+          const tokenUriMetadataJson = await tokenUriMetadata.json();
+          ownedIdsMetadata.push(tokenUriMetadataJson);
+        }
+      }
+      setOwnedIds(ownedIdsMetadata);
     } catch (err) {
       console.error(err);
     }
@@ -97,6 +119,8 @@ export default function Home() {
 
       getTokenIdsMinted();
 
+      getOwnedNfts();
+
       setInterval(async function () {
         await getTokenIdsMinted();
       }, 5 * 1000);
@@ -132,7 +156,7 @@ export default function Home() {
     <div>
       <Head>
         <title>Zyzz NFT Collection</title>
-        <meta name="description" content="LW3Punks-Dapp" />
+        <meta name="description" content="Zyzz-Dapp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
@@ -150,6 +174,35 @@ export default function Home() {
         <div>
           <img className={styles.image} src="./Zyzz/3.png" />
         </div>
+      </div>
+      <div>
+        {ownedIds.length > 0 ? (
+          <>
+            <p style={{ textAlign: "center" }}>All your Zyzz NFT's</p>
+            {ownedIds.map((id) => {
+              return (
+                <div key={id.name} style={{ textAlign: "center" }}>
+                  <div>
+                    <img src={id.image} />
+                    <p>{id.name}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          <div>
+            <p style={{ textAlign: "center" }}>
+              See this collection in{" "}
+              <a
+                style={{ textDecoration: "underline" }}
+                href="https://testnets.opensea.io/collection/zyzz-god-of-aesthetics"
+              >
+                Opensea
+              </a>
+            </p>
+          </div>
+        )}
       </div>
 
       <footer className={styles.footer}>Made by Aridaitech</footer>

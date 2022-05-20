@@ -13,13 +13,13 @@ contract Zyzz is ERC721Enumerable, Ownable {
      */
     string _baseTokenURI;
 
-    //  _price is the price of one LW3Punks NFT
+    //  _price is the price of one Zyzz NFT
     uint256 public _price = 0.01 ether;
 
     // _paused is used to pause the contract in case of an emergency
     bool public _paused;
 
-    // max number of LW3Punks
+    // max number of Zyzz NFTs
     uint256 public maxTokenIds = 5;
 
     // total number of tokenIds minted
@@ -30,11 +30,6 @@ contract Zyzz is ERC721Enumerable, Ownable {
         _;
     }
 
-    /**
-     * @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
-     * name in our case is `LW3Punks` and symbol is `LW3P`.
-     * Constructor for LW3P takes in the baseURI to set _baseTokenURI for the collection.
-     */
     constructor(string memory baseURI)
         ERC721("Zyzz God of Aesthetics", "Zyzz")
     {
